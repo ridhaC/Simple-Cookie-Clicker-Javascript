@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>0 Cookies</title>
+    </head>
+    <body>
+
+        <h1 id="counter">You have 0 cookies</h1>
+        <h2 id="autoCounter">0 Auto Cookies Per Second</h1>
+        
+        <img src="cookie.png" alt="cookie button" onclick="getCookies(1);">
+        
+        <ul id="autoClickerWindow"></ul>
+
+        <button type = "button" onclick = "setCookies(0);">Reset</button>
+        
+        
+        <script>
+            let cookies = 0;
+            let autoCookies = 0;
+
+            let autoClickers = [
+                {name: "Cursor", cookiesPerTick: 1, tickRate: 1000, cost:10, owned: 0},
+                {name: "Grandma", cookiesPerTick: 3, tickRate: 1000, cost:20, owned: 0},
+                {name: "Grandma On Steroids", cookiesPerTick: 3, tickRate: 500, cost: 40, owned: 0}
+            ]
+
+            let cookiesPerTickInterval = {};
+
+            // Put all auto clickers on the dom
+            autoClickers.forEach((autoClicker, index) => {
+                // Container for all individual autoclicker shop interface
+                let clickerUI = document.createElement("li");
+                clickerUI.setAttribute("id", index);
+                
+                let clickerName = document.createTextNode(autoClicker.name);
+                clickerUI.appendChild(clickerName);
+
+                let clickerCost = document.createTextNode(autoClicker.cost);
+                clickerUI.appendChild(clickerCost);
+
+                let clickerCount = document.createTextNode(`Owned ${autoClicker.owned}`);
+                clickerUI.appendChild(clickerCount);
+
+                let clickerPurchaseButton = document.createElement("button");
+                clickerPurchaseButton.setAttribute("type", "button");
+                clickerPurchaseButton.innerHTML = "Purchase";
+                clickerPurchaseButton.onclick = () => buyAutoClicker(autoClicker, clickerCount);
+                clickerUI.appendChild(clickerPurchaseButton);
+
+                let ul = document.getElementById("autoClickerWindow");
+
+                ul.appendChild(clickerUI);
+                
+                if(!cookiesPerTickInterval[autoClicker.tickRate]) {
+                    cookiesPerTickInterval[autoClicker.tickRate] = 0;
+                    setInterval(getAutoCookies, autoClicker.tickRate, autoClicker.tickRate);
+                    console.log(`adding ${autoClicker.tickRate} to cookies per tick dict`);
+                } 
+            });
+            
+            function getAutoCookies(tickRate) {
+                getCookies(cookiesPerTickInterval[tickRate]);
+            }
+            
+            function buyAutoClicker(clicker, visuals) {
+                clicker.owned++;
+                console.log(visuals.wholeText);
+                cookiesPerTickInterval[clicker.tickRate] += clicker.cookiesPerTick;
+                visuals = document.createTextNode(`Owned ${clicker.owned}`);
+            }
+
+            function getCookies(amount) {
+                setCookies(cookies + amount);
+            }
+
+            function setCookies(value) {
+                cookies = value;
+                document.getElementById("counter").innerHTML = `You have ${cookies} cookies`;
+                document.title = `${cookies} cookies`
+            }
+
+            
+        </script>
+
+    </body>
+</html>
+
